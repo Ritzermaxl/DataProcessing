@@ -1,0 +1,3 @@
+canlib==1.25.393
+marpledata==0.1.3
+python-dotenv==1.0.1
