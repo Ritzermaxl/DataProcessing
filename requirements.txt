@@ -1,3 +1,6 @@
+alive_progress==3.1.5
 canlib==1.25.393
+cantools==38.0.2
 marpledata==0.1.3
 python-dotenv==1.0.1
+PyYAML==6.0.1

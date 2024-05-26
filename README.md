@@ -31,3 +31,5 @@ Marple API: https://docs.marpledata.com/docs/for-developers/python
 Marple Python: https://pypi.org/project/marpledata/
 
 Cooles dings: https://github.com/emotionrennteam/log-storage-client
+
+https://git-scm.com/book/en/v2/Git-Tools-Submodules
