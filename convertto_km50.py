@@ -29,23 +29,25 @@ def listfiles(filename):
 
     return filelist
 
-def downloadlogs(filename, logs, ResultDir, config):
+def downloadlogs(filename, logs, location):
     with kvmlib.openKmf(filename) as kmf:
         for i, log_file in enumerate(kmf.log):
             if i not in logs:
                 continue  # Skip this log file if its index is not in the logs list
             
-            num=len(list(log_file))
+            #num=len(list(log_file))
+
+            num=log_file.event_count_estimation()
             # The first logEvent contains device information
             event_iterator = iter(log_file)
             first_event = next(event_iterator)
-            logfile_name = ('{start}_{duration}s_{index:03}.kme50'.
+            logfile_name = ('{start}_{location}_{duration}s.kme50'.
                 format(start=log_file.start_time.strftime('%Y%m%d_%H%M%S'),
                         duration=int((log_file.end_time - log_file.start_time).total_seconds()),
-                        index=i,))          
+                        location=location,))          
             print('Saving to:', logfile_name)
 
-            with alive_bar(num-1) as bar:
+            with alive_bar(num) as bar:
                 with kvmlib.createKme(logfile_name) as kme:
                     print(first_event)
                     kme.write_event(first_event)
@@ -54,3 +56,4 @@ def downloadlogs(filename, logs, ResultDir, config):
                         #print(event)
                         kme.write_event(event)
                         bar()
+                bar(num - bar.current)

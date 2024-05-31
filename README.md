@@ -1,5 +1,11 @@
 # DataProcessing ToolChain
 
+## Usage:
+
+    python DataProcessing.py
+
+Choose Log Files to convert, converted files are then uploaded to Marple.
+
 ## Basic Idea for full Toolchain:
 
 ![alt text](Docs/Toolchain.png)

@@ -15,9 +15,11 @@ locations: [
         "FSEast",
         "FSAA",
         "FSATA",
+        "-----------",
+        "OFFICE"
         ]
 
-Cars: [
+cars: [
         "Caroline",
         "Valerie",
         ]
