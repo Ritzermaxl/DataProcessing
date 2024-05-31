@@ -6,6 +6,10 @@
 
 Choose Log Files to convert, converted files are then uploaded to Marple.
 
+## Demo
+
+![alt text](Docs/Demo.gif)
+
 ## Basic Idea for full Toolchain:
 
 ![alt text](Docs/Toolchain.png)
