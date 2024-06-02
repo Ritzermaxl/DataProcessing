@@ -59,6 +59,9 @@ def uploadmarplefile(ResultDir, File, Location, Car):
         source_id = m.upload_data_file(inputFile, "/"+Car+"/"+RemoteFolderName, metadata={'Car': Car, 'Location': Location})
         print("Uploaded file: %s" % inputFile)
         #Car+"/"+RemoteFolderName
+
+
+
     else:
         return None
 
@@ -66,7 +69,7 @@ def uploadmarplefile(ResultDir, File, Location, Car):
 
 def uploadfiles(ResultDir, Location, Car):
 
-    files = [f for f in os.listdir(ResultDir) if os.path.isfile(os.path.join(ResultDir, f)) and f.lower().endswith(('.mf4', '.mat'))]
+    files = [f for f in os.listdir(ResultDir) if os.path.isfile(os.path.join(ResultDir, f)) and f.lower().endswith(('.mf4', '.mat', '.mdf'))]
     
     for file in files:
         try:

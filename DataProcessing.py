@@ -26,12 +26,13 @@ def main():
         files = glob.glob(os.path.join(ResultDir, "*"))
         for f in files:
             os.remove(f)
+            continue
     else:
         os.mkdir(ResultDir)
     os.chdir(ResultDir)
 
 
-
+ 
     logstoexport = inquirer.checkbox(
         message="Select files to convert using [space], select all using [ALT+A]",
         choices=listfiles(Filename),
@@ -50,6 +51,7 @@ def main():
     ).execute()
 
     downloadlogs(Filename, logstoexport, location)
+
 
     convert_files_in_folder(ResultDir, config)
 

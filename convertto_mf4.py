@@ -4,25 +4,23 @@ from alive_progress import alive_bar
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-def trySetProperty(converter, property, value=None):
+        
+def try_set_propery(converter, property, value=None):
     # Check if the format supports the given property
     if converter.format.isPropertySupported(property):
-
-        # If a value was specified, set the property to this value
+        # If a value is specified, set the property to this value
         if value is not None:
             converter.setProperty(property, value)
 
-#        # get the property's default valuef
-#        default = converter.format.getPropertyDefault(property)
-#        print(" PROPERTY_%s is supported (Default: %s)" %
-#              (property['name'], default))
-#
-#        # get the property's current value
-#        value = converter.getProperty(property)
-#        print("	Current value: %s" % value)
-#    else:
-#        print(" PROPERTY %s is not supported" %
-#              (property['name']))
+        # Get the property's default value
+        default = converter.format.getPropertyDefault(property)
+        print(f'  {property} is supported (Default: {default})')
+
+        # Get the property's current value
+        value = converter.getProperty(property)
+        print(f'    Current value: {value}')
+    else:
+        print(f'  {property} is not supported')
 
 def add_dbc_files_from_config(config, kc):
     # Load the YAML configuration file
@@ -88,6 +86,7 @@ def convert_single_file(file, folder_path, config):
     print("Input filename is '%s'" % inputfile)
     # Set output format
     fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_MDF_4X_SIGNAL)
+
     print("Output format is '%s'" % fmt.name)
     
     # Set resulting output filename
@@ -105,8 +104,17 @@ def convert_single_file(file, folder_path, config):
     
     kc.setInputFile(inputfile, file_format=kvlclib.FILE_FORMAT_KME50)
 
-    # Allow output file to overwrite existing files
-    trySetProperty(kc, kvlclib.PROPERTY_OVERWRITE, 1)
+    try_set_propery(kc, kvlclib.PROPERTY_OVERWRITE, 1)
+
+    try_set_propery(kc, kvlclib.Property.COMPRESSION_LEVEL, 1)
+
+    #try_set_propery(kc, kvlclib.Property.CROP_PRETRIGGER)
+
+    #try_set_propery(kc, kvlclib.Property.SIGNAL_BASED)
+
+    #trySetProperty(kc, kvlclib.Property.COMPRESSION_LEVEL, 0)
+
+    print("break")
 
     # Convert all events
     convertEvents(kc)
@@ -140,6 +148,31 @@ def convert_files_in_folder(folder_path, config_path):
             print(f"Error occurred while processing {file}: {e}") 
 
                   
+def directmf4(file, folder_path, config):
+
+    fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_MDF_4X_SIGNAL)
+    print("Output format is '%s'" % fmt.name)
+    
+    # Set resulting output filename
+    outfile = os.path.join(folder_path, os.path.splitext(file)[0] + "." + fmt.extension)
+    print("Output filename is '%s'" % outfile)
+
+    # Create converter
+    kc = kvlclib.Converter(outfile, fmt)
+
+
+    # Add DBC files from config file
+    add_dbc_files_from_config(config, kc)
+
+
+
+
+
+
+
+
+
+
 
 # Set the folder path and config file path
 #folder_path = './result'

@@ -19,11 +19,11 @@ def listfiles(filename):
         num_log_files = len(kmf.log)
         filelist = []
         for i, log_file in enumerate(kmf.log):
-            name = "File {index}: {start} - {end}, approx {num} events.".format(
+            name = "File {index}: {start} - {duration}s, approx {num} events.".format(
                 index=i,
                 start=log_file.start_time,
-                end=log_file.end_time,
-                num=log_file.event_count_estimation()
+                num=log_file.event_count_estimation(),
+                duration=int((log_file.start_time - log_file.end_time).total_seconds()),
             )
             filelist.append(Choice(i, name))
 
@@ -35,7 +35,7 @@ def downloadlogs(filename, logs, location):
             if i not in logs:
                 continue  # Skip this log file if its index is not in the logs list
             
-            #num=len(list(log_file))
+            
 
             num=log_file.event_count_estimation()
             # The first logEvent contains device information
@@ -49,6 +49,8 @@ def downloadlogs(filename, logs, location):
 
             with alive_bar(num) as bar:
                 with kvmlib.createKme(logfile_name) as kme:
+
+                    
                     print(first_event)
                     kme.write_event(first_event)
                     for event in event_iterator:
