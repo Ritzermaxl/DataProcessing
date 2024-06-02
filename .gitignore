@@ -1,6 +1,6 @@
 results/
 *.kme50
-*.mf4
+#*.mf4
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
