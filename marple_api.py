@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from marple import Marple
 import yaml
 import json
+import shutil
 
 load_dotenv()
 
@@ -16,9 +17,10 @@ def load_config(config_path):
     return config
 
 config = load_config("config.yml") #C:/config.yml
-Filename = config['filename']
 ResultDir = config['resultDir']
 Locations = config['locations']
+ArchiveDir = config['archiveDir']
+
 
 m.check_connection()
 response = m.get('/version')
@@ -53,19 +55,16 @@ def uploadmarplefile(ResultDir, File, Location, Car):
 
     RemoteFolderName = remotefoldername(ResultDir, Location)
 
-
     if inputFile not in listremotefolder(RemoteFolderName):
 
         source_id = m.upload_data_file(inputFile, "/"+Car+"/"+RemoteFolderName, metadata={'Car': Car, 'Location': Location})
         print("Uploaded file: %s" % inputFile)
         #Car+"/"+RemoteFolderName
 
-
-
     else:
         return None
 
-    return source_id
+    return RemoteFolderName
 
 def uploadfiles(ResultDir, Location, Car):
 
@@ -73,8 +72,18 @@ def uploadfiles(ResultDir, Location, Car):
     
     for file in files:
         try:
-            uploadmarplefile(ResultDir, file, Location, Car)
+            RemoteFolderName = uploadmarplefile(ResultDir, file, Location, Car)
             #os.remove(os.path.join(ResultDir, file))
+
+            if RemoteFolderName:  # Check if the file was uploaded and RemoteFolderName was returned
+                # Define the archive path
+                archivePath = os.path.join(ArchiveDir, RemoteFolderName)
+                # Create the directory if it doesn't exist
+                if not os.path.exists(archivePath):
+                    os.makedirs(archivePath)
+                # Move the file
+                shutil.move(os.path.join(ResultDir, file), os.path.join(archivePath, file))
+                print(f"Moved {file} to archive folder: {archivePath}")
 
         except Exception as e:
             print(f"Error occurred while uploading {file}: {e}") 

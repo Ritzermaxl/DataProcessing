@@ -1,5 +1,6 @@
-filename: 'E:/LOG00000.KMF'
+inputfilename: 'E:/LOG00000.KMF'
 resultDir: "C:/results/"
+archiveDir: "C:/LogArchive"
 
 locations: [
         "FahrschuleFD",
@@ -24,27 +25,14 @@ cars: [
         "Valerie",
         ]
 
-#dbc_files:
-#  - path: "./CanNetworks2024/system_can.dbc"
-#    channel_mask: ONE
-#  - path: "./CanNetworks2024/vehicle_dynamics.dbc"
-#    channel_mask: TWO
-#  - path: "./CanNetworks2024/tightverter_front.dbc"
-#    channel_mask: THREE
-#  - path: "./CanNetworks2024/tightverter_rear.dbc"
-#    channel_mask: FOUR
-#  - path: "./CanNetworks2024/ams_can.dbc"
-#    channel_mask: FIVE
-#
 dbc_files:
-  - path: "C:/CanNetworks2024/system_can.dbc"
+  - relativepath: "/CanNetworks2024/system_can.dbc"
     channel_mask: ONE
-  - path: "C:/CanNetworks2024/vehicle_dynamics.dbc"
+  - relativepath: "/CanNetworks2024/vehicle_dynamics.dbc"
     channel_mask: TWO
-  - path: "C:/CanNetworks2024/tightverter_front.dbc"
+  - relativepath: "/CanNetworks2024/tightverter_front.dbc"
     channel_mask: THREE
-  - path: "C:/CanNetworks2024/tightverter_rear.dbc"
+  - relativepath: "/CanNetworks2024/tightverter_rear.dbc"
     channel_mask: FOUR
-  - path: "C:/CanNetworks2024/ams_can.dbc"
-    channel_mask: FIVE    
-#  # Add more DBC files and channel masks as needed
+  - relativepath: "/CanNetworks2024/ams_can.dbc"
+    channel_mask: FIVE
