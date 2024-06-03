@@ -35,8 +35,6 @@ def downloadlogs(filename, logs, location):
             if i not in logs:
                 continue  # Skip this log file if its index is not in the logs list
             
-            
-
             num=log_file.event_count_estimation()
             # The first logEvent contains device information
             event_iterator = iter(log_file)

@@ -8,19 +8,21 @@ def load_config(config_path):
         config = yaml.safe_load(file)
     return config
 
-config = load_config("config.yml") #C:/config.yml
-Filename = config['filename']
+config = load_config("config.yml") #C:/config.yml 
+inputfilename = config['inputfilename']
 ResultDir = config['resultDir']
 Locations = config['locations']
 
-from convertto_km50 import listfiles
-from convertto_km50 import downloadlogs
-
-from convertto_mf4 import convert_files_in_folder
-
 from marple_api import uploadfiles
 
+from converter import converter
+from converter import listfiles
+
 def main():
+
+    gitpath = os.getcwd()
+    print(gitpath)
+
     # Make sure the result directory exists and is empty 
     if os.path.isdir(ResultDir):
         files = glob.glob(os.path.join(ResultDir, "*"))
@@ -35,7 +37,7 @@ def main():
  
     logstoexport = inquirer.checkbox(
         message="Select files to convert using [space], select all using [ALT+A]",
-        choices=listfiles(Filename),
+        choices=listfiles(inputfilename),
         validate=lambda result: len(result) >= 1,
         invalid_message="should be at least 1 selection",
     ).execute()
@@ -50,10 +52,8 @@ def main():
         choices=Locations,
     ).execute()
 
-    downloadlogs(Filename, logstoexport, location)
 
-
-    convert_files_in_folder(ResultDir, config)
+    converter(inputfilename, logstoexport, location, ResultDir, config, gitpath)
 
     print("Conversion complete, now uploading files to Marple...")
     uploadfiles(ResultDir, location, car)

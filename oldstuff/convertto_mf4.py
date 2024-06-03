@@ -5,7 +5,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
         
-def try_set_propery(converter, property, value=None):
+def try_set_property(converter, property, value=None):
     # Check if the format supports the given property
     if converter.format.isPropertySupported(property):
         # If a value is specified, set the property to this value
@@ -104,9 +104,9 @@ def convert_single_file(file, folder_path, config):
     
     kc.setInputFile(inputfile, file_format=kvlclib.FILE_FORMAT_KME50)
 
-    try_set_propery(kc, kvlclib.PROPERTY_OVERWRITE, 1)
+    try_set_property(kc, kvlclib.PROPERTY_OVERWRITE, 1)
 
-    try_set_propery(kc, kvlclib.Property.COMPRESSION_LEVEL, 1)
+    try_set_property(kc, kvlclib.Property.COMPRESSION_LEVEL, 1)
 
     #try_set_propery(kc, kvlclib.Property.CROP_PRETRIGGER)
 
@@ -148,32 +148,6 @@ def convert_files_in_folder(folder_path, config_path):
             print(f"Error occurred while processing {file}: {e}") 
 
                   
-def directmf4(file, folder_path, config):
-
-    fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_MDF_4X_SIGNAL)
-    print("Output format is '%s'" % fmt.name)
-    
-    # Set resulting output filename
-    outfile = os.path.join(folder_path, os.path.splitext(file)[0] + "." + fmt.extension)
-    print("Output filename is '%s'" % outfile)
-
-    # Create converter
-    kc = kvlclib.Converter(outfile, fmt)
-
-
-    # Add DBC files from config file
-    add_dbc_files_from_config(config, kc)
-
-
-
-
-
-
-
-
-
-
-
 # Set the folder path and config file path
 #folder_path = './result'
 #config_file_path = 'config.yml'
