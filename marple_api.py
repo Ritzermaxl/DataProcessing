@@ -57,7 +57,7 @@ def uploadmarplefile(ResultDir, File, Location, Car):
 
     if inputFile not in listremotefolder(RemoteFolderName):
 
-        source_id = m.upload_data_file(inputFile, "/"+Car+"/"+RemoteFolderName, metadata={'Car': Car, 'Location': Location})
+        source_id = m.upload_data_file(inputFile, "/"+Car+"/"+RemoteFolderName,plugin='MDF_plugin', metadata={'Car': Car, 'Location': Location})
         print("Uploaded file: %s" % inputFile)
         #Car+"/"+RemoteFolderName
 

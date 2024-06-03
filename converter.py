@@ -4,21 +4,10 @@ from alive_progress import alive_bar
 import os
 from InquirerPy.base.control import Choice
 
-#def load_config(config_path):
-#    with open(config_path, 'r') as file:
-#        config = yaml.safe_load(file)
-#    return config
 
-#config = load_config("config.yml") #C:/config.yml
-
-def loadconfig(config):
-    Filename = config['inputfilename']
-    ResultDir = config['resultDir']
-    Locations = config['locations']
-
-def listfiles(filename):
+def listfiles(config):
+    filename = config['inputfilename']
     with kvmlib.openKmf(filename) as kmf:
-
         ldf_version = kmf.log.ldf_version
         if ldf_version != VersionNumber(major=5, minor=0):
             if ldf_version == VersionNumber(major=3, minor=0):
@@ -29,7 +18,7 @@ def listfiles(filename):
         num_log_files = len(kmf.log)
         filelist = []
         for i, log_file in enumerate(kmf.log):
-            name = "File {index}: {start} - {duration}s, approx {num} events.".format(
+            name = "File {index}: {start}-{duration}s, approx {num} events.".format(
                 index=i,
                 start=log_file.start_time,
                 num=log_file.event_count_estimation(),
@@ -39,9 +28,9 @@ def listfiles(filename):
 
     return filelist
 
-def add_dbc_files_from_config(config, gitpath, kc):
+def add_dbc_files_from_config(config, kc):
     #   Load all the DBC files specified in the configuration file into the converter
-    loadconfig(config)
+    gitpath = config['gitpath']
     # Mapping from string to kvlclib.ChannelMask enum
     channel_mask_mapping = {
         'ONE': kvlclib.ChannelMask.ONE,
@@ -73,16 +62,16 @@ def try_set_property(converter, property, value=None):
 
         # Get the property's default value
         default = converter.format.getPropertyDefault(property)
-        print(f'  {property} is supported (Default: {default})')
+        #print(f'  {property} is supported (Default: {default})')
 
         # Get the property's current value
         value = converter.getProperty(property)
-        print(f'    Current value: {value}')
-    else:
-        print(f'  {property} is not supported')
+        #print(f'    Current value: {value}')
+    #else:
+        #print(f'  {property} is not supported')
 
 def setconverter(config, folder_path, exportfilename, gitpath):
-    loadconfig(config)
+
     # Set output format
     fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_MDF_4X_SIGNAL)
 
@@ -97,7 +86,7 @@ def setconverter(config, folder_path, exportfilename, gitpath):
 
 
     # Add DBC files from config file
-    add_dbc_files_from_config(config, gitpath, kc)
+    add_dbc_files_from_config(config, kc)
 
     # Set input filename and format
     
@@ -107,17 +96,17 @@ def setconverter(config, folder_path, exportfilename, gitpath):
     #https://kvaser.com/canlib-webhelp/kvlclib_8h.html#PROPERTY_xxx
     # Allow output file to overwrite existing files
     try_set_property(kc, kvlclib.PROPERTY_OVERWRITE, 1)
-
-    try_set_property(kc, kvlclib.Property.COMPRESSION_LEVEL, 6)
+    try_set_property(kc, kvlclib.Property.COMPRESSION_LEVEL, 3)
 
     #try_set_property(kc, kvlclib.Property.FULLY_QUALIFIED_NAMES, 1)
-
 
     return kc
     # Convert all events
 
-def converter(inputfilename, logs, location, ResultDir, config, gitpath):
-    loadconfig(config)
+def converter(logs, location, config):
+    inputfilename = config['inputfilename']
+    ResultDir = config['resultDir']
+
     with kvmlib.openKmf(inputfilename) as kmf:
         for i, log_file in enumerate(kmf.log):
 
@@ -130,9 +119,10 @@ def converter(inputfilename, logs, location, ResultDir, config, gitpath):
                         location=location,))
 
             num=log_file.event_count_estimation()
+            gitpath = config['gitpath']
             kc = setconverter(config, ResultDir, exportfilename, gitpath)
 
-            print("Saving to: %s" % kc.getOutputFilename())
+            #print("Saving to: %s" % kc.getOutputFilename())
             # The first logEvent contains device information
             event_iterator = iter(log_file)
             first_event = next(event_iterator)
@@ -141,18 +131,28 @@ def converter(inputfilename, logs, location, ResultDir, config, gitpath):
                 
                 #print(i)
                 #print(first_event)
-
                 kc.feedLogEvent(first_event)
                 kc.convertEvent()
 
                 for event in event_iterator:
                     kc.feedLogEvent(event)
+                    #print(event)
                     kc.convertEvent()
                     bar()
-                    
+
+                #for idx, event in enumerate(event_iterator, start=1):
+                #    if idx > 4:  # Skip the first 4 events
+                #        kc.feedLogEvent(event)
+                #        #print(event)
+                #        kc.convertEvent()
+                #        bar()                    
                 bar(num - bar.current)
             kc.flush()
 
 #allfiles = range(0,283)
 
-#converter(Filename, allfiles, "Graz", ResultDir, config)
+#file = [101, 140]
+#
+#gitpath = os.getcwd()
+#
+#converter(inputfilename, file, "Graz", ResultDir, config, gitpath)
