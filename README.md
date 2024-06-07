@@ -1,5 +1,9 @@
 # DataProcessing ToolChain
 
+##TODO
+
+implement converter in C++ or smth to make it faster. python is slow as fuck! Hias was always right!
+
 ## Usage:
 
     python DataProcessing.py
