@@ -1,5 +1,5 @@
 from converter import converter
-from marple_api import uploadfiles
+#from marple_api import uploadfiles
 import yaml
 import os
 
@@ -17,4 +17,4 @@ location = "Franz"
 car = "tiffany"
 
 converter(logstoexport, location, config)
-uploadfiles(config["resultDir"], location, car)
+#uploadfiles(config["resultDir"], location, car)

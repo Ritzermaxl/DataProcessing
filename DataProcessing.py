@@ -30,6 +30,7 @@ def main():
 
     repo_path = os.getcwd()
     submodule_path = "CanNetworks2024"
+    print("Checking if DBC files are up to date...")
     is_up_to_date = check_submodule_status(repo_path, submodule_path)
 
     if not is_up_to_date:

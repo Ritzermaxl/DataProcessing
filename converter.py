@@ -9,6 +9,7 @@ def listfiles(config):
     filename = config['inputfilename']
     with kvmlib.openKmf(filename) as kmf:
         ldf_version = kmf.log.ldf_version
+        #print(ldf_version)
         if ldf_version != VersionNumber(major=5, minor=0):
             if ldf_version == VersionNumber(major=3, minor=0):
                 raise ValueError('This log file can be read if you reopen the'
@@ -42,7 +43,9 @@ def add_dbc_files_from_config(config, kc):
     
     # Iterate through each DBC file configuration and add them
     for dbc_config in config['dbc_files']:
-        path = os.path.join(gitpath, dbc_config['relativepath'])
+        #path = os.path.join(gitpath, dbc_config['relativepath']) #does not work for some reason, probably beacause of \\
+
+        path = gitpath + dbc_config['relativepath']
 
         channel_mask_str = dbc_config['channel_mask']
         
