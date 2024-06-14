@@ -26,13 +26,13 @@ cars: [
         ]
 
 dbc_files:
-  - relativepath: "\\CanNetworks2024\\system_can.dbc"
+  - relativepath: "CanNetworks2024/system_can.dbc"
     channel_mask: ONE
-  - relativepath: "\\CanNetworks2024\\vehicle_dynamics.dbc"
+  - relativepath: "CanNetworks2024/vehicle_dynamics.dbc"
     channel_mask: TWO
-  - relativepath: "\\CanNetworks2024\\tightverter_front.dbc"
+  - relativepath: "CanNetworks2024/tightverter_front.dbc"
     channel_mask: THREE
-  - relativepath: "\\CanNetworks2024\\tightverter_rear.dbc"
+  - relativepath: "CanNetworks2024/tightverter_rear.dbc"
     channel_mask: FOUR
-  - relativepath: "\\CanNetworks2024\\ams_can.dbc"
+  - relativepath: "CanNetworks2024/ams_can.dbc"
     channel_mask: FIVE

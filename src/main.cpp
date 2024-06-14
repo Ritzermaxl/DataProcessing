@@ -17,6 +17,8 @@
 #include <indicators/progress_bar.hpp>
 #include <indicators/cursor_control.hpp>
 
+#include <yaml-cpp/yaml.h>
+
 class CanBaseException : public std::exception {
 public:
     const char* what() const noexcept override { return err_txt; }
@@ -71,8 +73,7 @@ private:
 public:
     MDF4Converter(const std::string& outpath) {
         uint32_t yes = 1;
-        KvlcException::throw_on_error(kvlcCreateConverter(&h, outpath.c_str(),
-            KVLC_FILE_FORMAT_MDF_4X_SIGNAL));
+        KvlcException::throw_on_error(kvlcCreateConverter(&h, outpath.c_str(),KVLC_FILE_FORMAT_MDF_4X_SIGNAL));
         KvlcException::throw_on_error(kvlcFeedSelectFormat(h, KVLC_FILE_FORMAT_MEMO_LOG));
         KvlcException::throw_on_error(kvlcSetProperty(h, KVLC_PROPERTY_OVERWRITE, &yes, sizeof(yes)));
     }
@@ -85,20 +86,29 @@ public:
         KvlcException::throw_on_error(kvlcConvertEvent(h));
     }
 
-    void addDatabaseFile(const std::string& filename, unsigned int channelMask) {
-        KvlcException::throw_on_error(kvlcAddDatabaseFile(h, filename.c_str(), channelMask));
+
+    void addDatabaseFile(const std::string& path, unsigned int channelMask) {
+        KvlcException::throw_on_error(kvlcAddDatabaseFile(h, path.c_str(), channelMask));
+        std::cout << "Adding DBC file: " << path << " with channel mask: " << channelMask << std::endl;
     }
 };
 
-void add_dbc_files_from_config(MDF4Converter& kc) {
-    // Static configuration (normally, this would be loaded from a file or another source).
-    std::vector<DbcConfig> dbcFiles = {
-        {"C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/CanNetworks2024/system_can.dbc", "ONE"},
-        {"C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/CanNetworks2024/vehicle_dynamics.dbc", "TWO"},
-        {"C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/CanNetworks2024/tightverter_front.dbc", "THREE"},
-        {"C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/CanNetworks2024/tightverter_rear.dbc", "FOUR"},
-        {"C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/CanNetworks2024/ams_can.dbc", "FIVE"}
-    };
+std::vector<DbcConfig> loadConfig(const std::string& filename) {
+    YAML::Node config = YAML::LoadFile(filename);
+    std::vector<DbcConfig> dbcFiles;
+
+    for (const auto& node : config["dbc_files"]) {
+        DbcConfig dbcConfig;
+        dbcConfig.relativePath = node["relativepath"].as<std::string>();
+        dbcConfig.channelMask = node["channel_mask"].as<std::string>();
+        dbcFiles.push_back(dbcConfig);
+    }
+
+    return dbcFiles;
+}
+
+void add_dbc_files_from_config(MDF4Converter& kc, const std::string& basePath) {
+    std::vector<DbcConfig> dbcFiles = loadConfig("C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/config.yml");
 
     // Mapping from string to ChannelMask Bitmask
     std::map<std::string, unsigned int> channelMaskMapping = {
@@ -111,7 +121,7 @@ void add_dbc_files_from_config(MDF4Converter& kc) {
 
     // Iterate through each DBC file configuration and add them.
     for (const auto& dbcConfig : dbcFiles) {
-        std::string path = dbcConfig.relativePath;
+        std::string fullPath = (std::filesystem::path(basePath) / dbcConfig.relativePath).string();
         auto it = channelMaskMapping.find(dbcConfig.channelMask);
 
         if (it == channelMaskMapping.end()) {
@@ -119,7 +129,7 @@ void add_dbc_files_from_config(MDF4Converter& kc) {
         }
 
         unsigned int channelMask = it->second;
-        kc.addDatabaseFile(path, channelMask);
+        kc.addDatabaseFile(fullPath, channelMask);
     }
 }
 
@@ -162,7 +172,7 @@ int main() {
 
     //for (size_t log_nr = 4; log_nr < nr_logfiles; log_nr++) {
 
-    for (size_t log_nr = 4; log_nr == 4; log_nr++) {
+    for (size_t log_nr = 143; log_nr == 143; log_nr++) {
         int64_t event_count;
         kvmLogEventEx e;
         KvmException::throw_on_error(
@@ -182,7 +192,8 @@ int main() {
         MDF4Converter conv(outpath.string());
 
         // Add DBC files to the converter.
-        add_dbc_files_from_config(conv);
+        std::string basePath = "C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/"; // Change this to your base path
+        add_dbc_files_from_config(conv, basePath);
 
         std::cout << "Rough Event Estimate: " << event_count << std::endl;
 
