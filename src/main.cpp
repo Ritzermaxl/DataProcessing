@@ -62,10 +62,6 @@ public:
     };
 };
 
-struct DbcConfig {
-    std::string relativePath;
-    std::string channelMask;
-};
 
 class MDF4Converter {
 private:
@@ -93,22 +89,43 @@ public:
     }
 };
 
-std::vector<DbcConfig> loadConfig(const std::string& filename) {
-    YAML::Node config = YAML::LoadFile(filename);
-    std::vector<DbcConfig> dbcFiles;
+struct DbcConfig {
+    std::string relativePath;
+    std::string channelMask;
+};
 
+struct ConfigResult {
+    std::vector<DbcConfig> dbcFiles;
+    std::string resultDir;
+    std::string inputfilename;
+};
+
+ConfigResult loadConfig(const std::string& filename) {
+    YAML::Node config = YAML::LoadFile(filename);
+    ConfigResult result;
+
+    // Load dbc_files
     for (const auto& node : config["dbc_files"]) {
         DbcConfig dbcConfig;
         dbcConfig.relativePath = node["relativepath"].as<std::string>();
         dbcConfig.channelMask = node["channel_mask"].as<std::string>();
-        dbcFiles.push_back(dbcConfig);
+        result.dbcFiles.push_back(dbcConfig);
     }
 
-    return dbcFiles;
+    // Load resultDir
+    if (config["resultDir"]) {
+        result.resultDir = config["resultDir"].as<std::string>();
+    }
+
+    // Load inputfilename
+    if (config["inputfilename"]) {
+        result.inputfilename = config["inputfilename"].as<std::string>();
+    }
+    return result;
 }
 
-void add_dbc_files_from_config(MDF4Converter& kc, const std::string& basePath, std::string configFilePath) {
-    std::vector<DbcConfig> dbcFiles = loadConfig(configFilePath);
+void add_dbc_files_from_config(MDF4Converter& kc, const std::string& basePath, std::vector<DbcConfig> dbcFiles) {
+    //std::vector<DbcConfig> dbcFiles = loadConfig(configFilePath);
 
     // Mapping from string to ChannelMask Bitmask
     std::map<std::string, unsigned int> channelMaskMapping = {
@@ -185,6 +202,11 @@ int main(int argc, char* argv[]) {
     }
     std::cout << std::endl;
 
+    ConfigResult configResult = loadConfig(configFile);
+    std::vector<DbcConfig> dbcFiles = configResult.dbcFiles;
+    std::string resultDir = configResult.resultDir;
+    std::string inputfilename = configResult.inputfilename;
+    
 
     kvmStatus status;
     kvmInitialize();
@@ -196,9 +218,9 @@ int main(int argc, char* argv[]) {
     uint32_t nr_logfiles;
     int16_t converted_count = 0;
 
-    const char* inputfilename = "E:/LOG00000.KMF";
+    //const char* inputfilename = "E:/LOG00000.KMF";
 
-    kvmHandle kvm_handle = kvmKmfOpenEx(inputfilename, &status, kvmDEVICE, &ldfMajor, &ldfMinor);
+    kvmHandle kvm_handle = kvmKmfOpenEx(inputfilename.c_str(), &status, kvmDEVICE, &ldfMajor, &ldfMinor);
 
     KvmException::throw_on_error(status);
 
@@ -239,7 +261,7 @@ int main(int argc, char* argv[]) {
             // Add DBC files to the converter.
             //std::string basePath = "C:/Users/Zbook15uG5/Documents/GitHub/DataProcessing/"; // Change this to your base path
             std::string basePath = std::filesystem::path(argv[0]).parent_path().string();
-            add_dbc_files_from_config(conv, basePath, configFile);
+            add_dbc_files_from_config(conv, basePath, dbcFiles);
 
             std::cout << "Rough Event Estimate: " << event_count << std::endl;
 
@@ -279,6 +301,5 @@ int main(int argc, char* argv[]) {
             //std::cout << "Conversion finished"<< std::endl;
     }   
     }
-
     exit(0);
 }
