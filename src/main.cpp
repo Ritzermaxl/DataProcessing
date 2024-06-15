@@ -73,6 +73,7 @@ public:
         KvlcException::throw_on_error(kvlcFeedSelectFormat(h, KVLC_FILE_FORMAT_MEMO_LOG));
         KvlcException::throw_on_error(kvlcSetProperty(h, KVLC_PROPERTY_OVERWRITE, &yes, sizeof(yes)));
     }
+    
     ~MDF4Converter() {
         KvlcException::throw_on_error(kvlcDeleteConverter(h));
     }
@@ -81,7 +82,6 @@ public:
         KvlcException::throw_on_error(kvlcFeedLogEvent(h, &e));
         KvlcException::throw_on_error(kvlcConvertEvent(h));
     }
-
 
     void addDatabaseFile(const std::string& path, unsigned int channelMask) {
         KvlcException::throw_on_error(kvlcAddDatabaseFile(h, path.c_str(), channelMask));
@@ -217,8 +217,6 @@ int main(int argc, char* argv[]) {
 
     uint32_t nr_logfiles;
     int16_t converted_count = 0;
-
-    //const char* inputfilename = "E:/LOG00000.KMF";
 
     kvmHandle kvm_handle = kvmKmfOpenEx(inputfilename.c_str(), &status, kvmDEVICE, &ldfMajor, &ldfMinor);
 
