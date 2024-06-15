@@ -21,6 +21,15 @@ set(SOURCES src/main.cpp)
 # Create an executable from the source files
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+# Set the output directory for the executable for different configurations
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}
+    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_SOURCE_DIR}
+    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_SOURCE_DIR}
+)
+
 # Include the CANlib headers
 include_directories(${CANLIB_INCLUDE_DIR})
 
@@ -37,8 +46,7 @@ endif()
 
 include(FetchContent)
 
-
-#Fetch YAML-CPP
+# Fetch YAML-CPP
 FetchContent_Declare(
   yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
@@ -54,7 +62,7 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
 
-#Fetch INDICATORS
+# Fetch INDICATORS
 FetchContent_Declare(
   indicators
   GIT_REPOSITORY https://github.com/p-ranav/indicators.git

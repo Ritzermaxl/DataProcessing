@@ -1,6 +1,6 @@
 results/
 *.kme50
-#*.mf4
+*.mf4
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -1106,7 +1106,7 @@ _deps
 *.lib
 
 # Executables
-*.exe
+#*.exe
 *.out
 *.app
 
@@ -1145,7 +1145,7 @@ _deps
 *.dylib
 
 # Executables
-*.exe
+
 *.out
 *.app
 *.i*86

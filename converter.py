@@ -25,6 +25,7 @@ def listfiles(config):
                 num=log_file.event_count_estimation(),
                 duration=int((log_file.start_time - log_file.end_time).total_seconds()),
             )
+
             filelist.append(Choice(i, name))
 
     return filelist
@@ -45,7 +46,10 @@ def add_dbc_files_from_config(config, kc):
     for dbc_config in config['dbc_files']:
         #path = os.path.join(gitpath, dbc_config['relativepath']) #does not work for some reason, probably beacause of \\
 
-        path = gitpath + dbc_config['relativepath']
+        print(gitpath)
+        print(dbc_config['relativepath'])
+
+        path = gitpath + "\\" + dbc_config['relativepath'].replace("/", "\\")
 
         channel_mask_str = dbc_config['channel_mask']
         
@@ -142,13 +146,7 @@ def converter(logs, location, config):
                     #print(event)
                     kc.convertEvent()
                     bar()
-
-                #for idx, event in enumerate(event_iterator, start=1):
-                #    if idx > 4:  # Skip the first 4 events
-                #        kc.feedLogEvent(event)
-                #        #print(event)
-                #        kc.convertEvent()
-                #        bar()                    
+             
                 bar(num - bar.current)
             kc.flush()
 

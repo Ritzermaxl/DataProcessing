@@ -1,5 +1,6 @@
 import glob
 import os
+import subprocess
 import yaml
 from InquirerPy import inquirer
 
@@ -58,10 +59,17 @@ def main():
         choices=config['locations'],
     ).execute()
 
-    converter(logstoexport, location, config)
+    command = "CPPConverter.exe"
+
+    arguments = ["config.yml", location, ",".join([str(num) for num in logstoexport])]
+
+    # Combine command and arguments into a list
+    cmd_list = [command] + arguments
+    subprocess.run(cmd_list, check=True)
+    #converter(logstoexport, location, config)
 
     print("Conversion complete, now uploading files to Marple...")
-    uploadfiles(config["resultDir"], location, car)
+    #uploadfiles(config["resultDir"], location, car)
 
 
 if __name__ == "__main__":
